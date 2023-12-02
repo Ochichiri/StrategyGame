@@ -1,61 +1,78 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
+enum Item
+{
+    Worker,
+    TownCenter
+}
+
+[RequireComponent(typeof(TownCenterSpawner))]
+[RequireComponent(typeof(TownCenterWorkers))]
 public class TownCenter : MonoBehaviour
 {
-    [SerializeField] private Transform _workersContainer;
-    [SerializeField] private Scanner _scanner;
+    private Dictionary<Item, int> _costsOfItems = new Dictionary<Item, int>()
+    {
+        {Item.Worker, 3 },
+        {Item.TownCenter, 5 }
+    };
+
     [SerializeField] private int _resourcesCounter = 0;
 
-    private List<Worker> _workers;
+    private Item _creatingTarget = Item.Worker;
+
+    private TownCenterSpawner _townCenterSpawner;
 
     private void Start()
     {
-        _workers = new List<Worker>();
-
-        for (int i = 0; i < _workersContainer.childCount; i++)
-        {
-            if (_workersContainer.GetChild(i).gameObject.TryGetComponent(out Worker worker))
-                _workers.Add(worker);
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        if (_scanner.Resources != null)
-        {
-            OrderToCollect();
-        }
-    }
-
-    private void OrderToCollect()
-    {
-        List<Resource> resources = _scanner.Resources;
-
-        foreach(Resource resource in resources.ToList())
-        {
-            if(TryGetWorker(out Worker worker))
-            {
-                worker.MoveToResource(resource);
-                resources.Remove(resource);
-            }
-            else
-            {
-                return;
-            }
-        }
-    }
-
-    private bool TryGetWorker(out Worker worker)
-    {
-        worker = _workers.FirstOrDefault(worker => worker.HasActivity == false);
-
-        return worker != null;
+        _townCenterSpawner = GetComponent<TownCenterSpawner>();
     }
 
     public void GetResource()
     {
         _resourcesCounter++;
+        TryToCreate();
+    }
+
+    private void TryToCreate()
+    {
+        switch (_creatingTarget)
+        {
+            case Item.Worker:
+                if (TryBuyItem(Item.Worker))
+                {
+                    _townCenterSpawner.CreateWorker(this);
+                }
+                break;
+
+            case Item.TownCenter:
+                if (TryBuyItem(Item.TownCenter))
+                {
+                    _townCenterSpawner.BuildTownCenter();
+                }
+                break;
+
+            default:
+                Debug.Log("Item not found");
+                break;
+        }
+    }
+
+    private bool TryBuyItem(Item item)
+    {
+        if (_resourcesCounter >= _costsOfItems[item])
+        {
+            _resourcesCounter -= _costsOfItems[item];
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void SetFlag()
+    {
+        _creatingTarget = Item.TownCenter;
     }
 }

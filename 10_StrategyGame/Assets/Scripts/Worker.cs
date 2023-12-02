@@ -21,16 +21,12 @@ public class Worker : MonoBehaviour
         _workerMover = GetComponent<WorkerMover>();
         _workerCollision = GetComponent<WorkerCollision>();
 
-        if (_townCenter != null)
-        {
-            Init(_townCenter);
-        }
+        _workerMover.Init(_townCenter.transform);
     }
 
     public void Init(TownCenter townCenter)
     {
         _townCenter = townCenter;
-        _workerMover.Init(townCenter.transform);
     }
 
     public void MoveToResource(Resource resource)
