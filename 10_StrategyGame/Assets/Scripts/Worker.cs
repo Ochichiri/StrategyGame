@@ -5,6 +5,7 @@ using UnityEngine;
 public class Worker : MonoBehaviour
 {
     [SerializeField] private TownCenter _townCenter;
+    [SerializeField] private Transform _resourceContainer;
 
     private WorkerMover _workerMover;
     private WorkerCollision _workerCollision;
@@ -42,7 +43,8 @@ public class Worker : MonoBehaviour
     public void GetResource(Resource resource)
     {
         Resource = resource;
-        resource.transform.parent = this.gameObject.transform;
+        resource.transform.parent = _resourceContainer;
+        resource.transform.localPosition = new Vector3(0, 0, 0);
         _workerMover.SetTargetTownCenter();
     }
 

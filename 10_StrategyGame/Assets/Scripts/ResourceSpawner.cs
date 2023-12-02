@@ -7,6 +7,7 @@ public class ResourceSpawner : MonoBehaviour
     [SerializeField] private Transform _container;
 
     private int _spawnRange = 20;
+    private float _rotationRange = 360f;
     private float _rayDistance = 2f;
     private Vector3 _rayOffset = new Vector3(0, 1f, 0);
 
@@ -26,6 +27,7 @@ public class ResourceSpawner : MonoBehaviour
         {
             int randomX = Random.Range(-_spawnRange, _spawnRange);
             int randomZ = Random.Range(-_spawnRange, _spawnRange);
+            Quaternion randomRotation = Quaternion.Euler(0, Random.Range(0, _rotationRange), 0);
 
             Vector3 position = new Vector3(randomX, 0, randomZ);
 
@@ -33,7 +35,7 @@ public class ResourceSpawner : MonoBehaviour
             {
                 if (hit.collider.gameObject.GetComponent<Resource>() == false)
                 {
-                    Resource resource = Instantiate(_template, position, Quaternion.identity, _container);
+                    Resource resource = Instantiate(_template, position, randomRotation, _container);
                 }
             }
 
