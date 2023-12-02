@@ -29,9 +29,9 @@ public class WorkerCollision : MonoBehaviour
             }
         }
 
-        if (other.TryGetComponent(out TownCenter townCenter))
+        if (other.TryGetComponent(out TownCenterCollider townCenter))
         {
-            if (_worker.Resource != null && _worker.TownCenter == townCenter)
+            if (_worker.Resource != null && _worker.TownCenter == townCenter.transform.parent.GetComponent<TownCenter>())
             {
                 _worker.GiveResourceToTownCenter();
             }

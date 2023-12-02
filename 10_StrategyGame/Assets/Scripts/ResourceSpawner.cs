@@ -8,8 +8,8 @@ public class ResourceSpawner : MonoBehaviour
 
     private int _spawnRange = 20;
     private float _rotationRange = 360f;
-    private float _rayDistance = 2f;
-    private Vector3 _rayOffset = new Vector3(0, 1f, 0);
+    private float _rayDistance = 10f;
+    private Vector3 _rayOffset = new Vector3(0, 5f, 0);
 
     private WaitForSeconds _waitDelay;
     private float _delay = 1f;
@@ -33,7 +33,8 @@ public class ResourceSpawner : MonoBehaviour
 
             if (Physics.Raycast(position + _rayOffset, Vector3.down, out RaycastHit hit, _rayDistance))
             {
-                if (hit.collider.gameObject.GetComponent<Resource>() == false)
+                if (hit.collider.gameObject.GetComponent<Resource>() == false &&
+                    hit.collider.gameObject.GetComponent<TownCenterCollider>() == false)
                 {
                     Resource resource = Instantiate(_template, position, randomRotation, _container);
                 }
