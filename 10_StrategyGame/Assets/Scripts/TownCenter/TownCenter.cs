@@ -8,7 +8,7 @@ enum Item
 }
 
 [RequireComponent(typeof(TownCenterSpawner))]
-[RequireComponent(typeof(TownCenterWorkers))]
+[RequireComponent(typeof(TeamOfWorkers))]
 public class TownCenter : MonoBehaviour
 {
     private Dictionary<Item, int> _costsOfItems = new Dictionary<Item, int>()

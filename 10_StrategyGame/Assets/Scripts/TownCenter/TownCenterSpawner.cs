@@ -8,11 +8,11 @@ public class TownCenterSpawner : MonoBehaviour
     [SerializeField] private Worker _workerTemplate;
     [SerializeField] private Transform _workerSpawnPoint;
 
-    private TownCenterWorkers _townCenterWorkers;
+    private TeamOfWorkers _townCenterWorkers;
 
     private void Start()
     {
-        _townCenterWorkers = GetComponent<TownCenterWorkers>();
+        _townCenterWorkers = GetComponent<TeamOfWorkers>();
     }
 
     public void CreateWorker(TownCenter townCenter)

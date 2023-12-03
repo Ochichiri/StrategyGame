@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class TownCenterWorkers : MonoBehaviour
+public class TeamOfWorkers : MonoBehaviour
 {
     [SerializeField] private Transform _workersContainer;
     [SerializeField] private Scanner _scanner;
