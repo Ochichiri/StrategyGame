@@ -11,11 +11,16 @@ public class Scanner : MonoBehaviour
         Resources = new List<Resource>();
     }
 
+    private void FixedUpdate()
+    {
+        Resources = Resources.FindAll(resource => resource != null);
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent(out Resource resource))
         {
-            Resources.Add(resource);
+            Resources?.Add(resource);
         }
     }
 }

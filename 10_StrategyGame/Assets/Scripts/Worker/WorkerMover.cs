@@ -1,17 +1,22 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Worker))]
 [RequireComponent(typeof(CharacterController))]
 public class WorkerMover : MonoBehaviour
 {
+    public event UnityAction<WorkerMover> TargetPositionReached;
+
     private CharacterController _characterController;
     private Transform _tagetPosition;
     private Transform _townCenterPosition;
     private float _movementSpeed = 4f;
     private float _rotationSpeed = 10f;
+    private Worker _worker;
 
     private void Start()
     {
+        _worker = GetComponent<Worker>();
         _characterController = GetComponent<CharacterController>();
     }
 
@@ -37,10 +42,33 @@ public class WorkerMover : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (_tagetPosition == null)
+        {
+            _worker.ResetWorker();
+        }
+
         if (_tagetPosition != null)
         {
             Move();
             RotateToTarget();
+        }
+
+        if (_tagetPosition != null && TargetPositionReached != null)
+        {
+            CheckPositionWithOffset();
+        }
+    }
+
+    private void CheckPositionWithOffset()
+    {
+        int offsetX = 3;
+        int offsetZ = 3;
+
+        if (Mathf.Abs(_tagetPosition.position.x - transform.position.x) <= offsetX &&
+            Mathf.Abs(_tagetPosition.position.z - transform.position.z) <= offsetZ)
+        {
+            TargetPositionReached?.Invoke(this);
+            ResetTarget();
         }
     }
 

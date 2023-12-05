@@ -16,24 +16,33 @@ public class Worker : MonoBehaviour
 
     public TownCenter TownCenter => _townCenter;
 
-    private void Start()
+    private void Awake()
     {
         _workerMover = GetComponent<WorkerMover>();
         _workerCollision = GetComponent<WorkerCollision>();
 
-        _workerMover.Init(_townCenter.transform);
+        if (_townCenter != null)
+        {
+            _workerMover.Init(_townCenter.transform);
+        }
     }
 
     public void Init(TownCenter townCenter)
     {
         _townCenter = townCenter;
+        _workerMover.Init(_townCenter.transform);
     }
 
-    public void MoveToResource(Resource resource)
+    public void MoveTo(Resource resource)
     {
         HasActivity = true;
         _workerCollision.SetTargetResource(resource);
         _workerMover.SetTarget(resource.transform);
+    }
+
+    public void MoveTo(Transform targetPosition)
+    {
+        _workerMover.SetTarget(targetPosition);
     }
 
     public void GetResource(Resource resource)
@@ -48,6 +57,11 @@ public class Worker : MonoBehaviour
     {
         _townCenter.GetResource();
         Destroy(Resource.gameObject);
+        ResetWorker();
+    }
+
+    public void ResetWorker()
+    {
         _workerMover.ResetTarget();
         HasActivity = false;
     }

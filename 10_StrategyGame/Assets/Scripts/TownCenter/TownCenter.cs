@@ -11,19 +11,24 @@ enum Item
 [RequireComponent(typeof(TeamOfWorkers))]
 public class TownCenter : MonoBehaviour
 {
+    [SerializeField] private GameObject _flag;
+    [SerializeField] private TownCenterBody _townCenterBody;
+
     private Dictionary<Item, int> _costsOfItems = new Dictionary<Item, int>()
     {
         {Item.Worker, 3 },
         {Item.TownCenter, 5 }
     };
 
-    [SerializeField] private int _resourcesCounter = 0;
-
+    private int _resourcesCounter = 0;
     private Item _creatingTarget = Item.Worker;
-
     private TownCenterSpawner _townCenterSpawner;
 
-    private void Start()
+    private TeamOfWorkers _teamOfWorkers;
+
+    public bool NeedWorker { get; private set; } = false;
+
+    private void Awake()
     {
         _townCenterSpawner = GetComponent<TownCenterSpawner>();
     }
@@ -31,30 +36,17 @@ public class TownCenter : MonoBehaviour
     public void GetResource()
     {
         _resourcesCounter++;
-        TryToCreate();
+        if (_creatingTarget == Item.Worker)
+        {
+            TryToCreateWorker();
+        }
     }
 
-    private void TryToCreate()
+    private void TryToCreateWorker()
     {
-        switch (_creatingTarget)
+        if (TryBuyItem(Item.Worker))
         {
-            case Item.Worker:
-                if (TryBuyItem(Item.Worker))
-                {
-                    _townCenterSpawner.CreateWorker(this);
-                }
-                break;
-
-            case Item.TownCenter:
-                if (TryBuyItem(Item.TownCenter))
-                {
-                    _townCenterSpawner.BuildTownCenter();
-                }
-                break;
-
-            default:
-                Debug.Log("Item not found");
-                break;
+            _townCenterSpawner.CreateWorker();
         }
     }
 
@@ -71,8 +63,37 @@ public class TownCenter : MonoBehaviour
         }
     }
 
-    public void SetFlag()
+    public void TryToCreateTownCenter()
+    {
+        if (TryBuyItem(Item.TownCenter))
+        {
+            _townCenterSpawner.MoveWorkerToBuildPoint(_flag.transform);
+            _creatingTarget = Item.Worker;
+            NeedWorker = false;
+        }
+    }
+
+    public void SetFlag(Vector3 position)
     {
         _creatingTarget = Item.TownCenter;
+        NeedWorker = true;
+        _flag.SetActive(true);
+        _flag.transform.position = position;
+        _townCenterBody.ReturnColor();
+    }
+
+    public void SelectTownCenter()
+    {
+        _townCenterBody.ChangeColor();
+    }
+
+    public void UnselectTownCenter()
+    {
+        _townCenterBody.ReturnColor();
+    }
+
+    public void RemoveFlag()
+    {
+        _flag.SetActive(false);
     }
 }

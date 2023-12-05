@@ -8,10 +8,12 @@ public class TeamOfWorkers : MonoBehaviour
     [SerializeField] private Transform _workersContainer;
     [SerializeField] private Scanner _scanner;
 
+    private TownCenter _townCenter;
     private List<Worker> _workers;
 
-    private void Start()
+    private void Awake()
     {
+        _townCenter = GetComponent<TownCenter>();
         _workers = new List<Worker>();
 
         for (int i = 0; i < _workersContainer.childCount; i++)
@@ -23,6 +25,11 @@ public class TeamOfWorkers : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (_townCenter.NeedWorker)
+        {
+            _townCenter.TryToCreateTownCenter();
+        }
+
         if (_scanner.Resources != null)
         {
             OrderToCollect();
@@ -37,7 +44,7 @@ public class TeamOfWorkers : MonoBehaviour
         {
             if (TryGetWorker(out Worker worker))
             {
-                worker.MoveToResource(resource);
+                worker.MoveTo(resource);
                 resources.Remove(resource);
             }
             else
@@ -47,7 +54,7 @@ public class TeamOfWorkers : MonoBehaviour
         }
     }
 
-    private bool TryGetWorker(out Worker worker)
+    public bool TryGetWorker(out Worker worker)
     {
         worker = _workers.FirstOrDefault(worker => worker.HasActivity == false);
 
@@ -58,5 +65,11 @@ public class TeamOfWorkers : MonoBehaviour
     {
         _workers.Add(newWorker);
         newWorker.transform.parent = _workersContainer;
+        newWorker.Init(GetComponent<TownCenter>());
+    }
+
+    public void DisconnectWorkerFromTownCenter(Worker worker)
+    {
+        _workers.Remove(worker);
     }
 }
